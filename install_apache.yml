@@ -5,7 +5,7 @@
   tasks:
           - name: update repository index
             dnf:
-                    state:latest
+                    state: latest
 
           - name: install httpd
             dnf:
@@ -17,7 +17,6 @@
                     name: httpd
                     state: started
                     enabled: yes
-  tasks:
 
           - name: Allow HTTP traffic
             firewalld:
@@ -30,7 +29,6 @@
           - name: Reload firewalld
             command: firewall-cmd --reload
 
-  tasks:
           - name: Install PHP packages
             dnf:
                     name: php,php-mysqlnd
@@ -44,8 +42,28 @@
                     state: present
                     backup: yes
 
-          - name: Restart Apache
+          - name: Enable and start the service on CentOS
             systemd:
                     name: httpd
-                    state: restarted
+                    state: started
                     enabled: yes
+                    use_backend: dnf4
+                    when:  ansible_distribution == "CentOS"
+
+          - name: Enable and start the service on Ubuntu
+            systemd:
+                    name: apache2
+                    state: started
+                    enabled: yes
+                    use_backend: dnf4
+                    when: ansible_distribution == "Ubuntu"
+       
+          - name: install php module
+            apt:
+                    name: "{{ item }}"
+                    state: present
+                    with_items:
+                            - libapache2-mod-php5
+                            - php-mcrypt
+                    when: ansible_distribution == "Ubuntu"
+
