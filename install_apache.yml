@@ -3,15 +3,15 @@
 - hosts: all
   become: true
   tasks:
-          - name: update repository index
+          - name: install httpd, php, and update_cache for CentOS
             dnf:
+                    name: 
+                        - httpd
+                        - php,php-mysqlnd
+                        - update_cache
+                    name: '*'
                     state: latest
-
-          - name: install httpd
-            dnf:
-                    name: httpd
-                    state: present
-
+                   
           - name: run httpd
             systemd:
                     name: httpd
@@ -28,42 +28,4 @@
 
           - name: Reload firewalld
             command: firewall-cmd --reload
-
-          - name: Install PHP packages
-            dnf:
-                    name: php,php-mysqlnd
-                    state: present
-
-          - name: Configure Apache to use PHP
-            lineinfile:
-                    path: /etc/httpd/conf/httpd.conf
-                    regexp: '^#AddHandler php'
-                    line: 'AddHandler php-script .php'
-                    state: present
-                    backup: yes
-
-          - name: Enable and start the service on CentOS
-            systemd:
-                    name: httpd
-                    state: started
-                    enabled: yes
-                    use_backend: dnf4
-                    when:  ansible_distribution == "CentOS"
-
-          - name: Enable and start the service on Ubuntu
-            systemd:
-                    name: apache2
-                    state: started
-                    enabled: yes
-                    use_backend: dnf4
-                    when: ansible_distribution == "Ubuntu"
-       
-          - name: install php module
-            apt:
-                    name: "{{ item }}"
-                    state: present
-                    with_items:
-                            - libapache2-mod-php5
-                            - php-mcrypt
-                    when: ansible_distribution == "Ubuntu"
 
