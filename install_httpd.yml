@@ -1,0 +1,13 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+          - name: install httpd and php for CentOS
+            dnf:
+                    name:
+                        - httpd
+                        - php
+                    update_cache: yes
+                    state: latest
+            
