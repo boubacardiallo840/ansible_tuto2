@@ -3,29 +3,11 @@
 - hosts: all
   become: true
   tasks:
-          - name: install httpd, php, and update_cache for CentOS
-            dnf:
+          - name: install httpd and php
+            package:
                     name: 
-                        - httpd
-                        - php,php-mysqlnd
-                        - update_cache
-                    name: '*'
+                        - "{{ httpd_package }}"
+                        - "{{ php_package }}"
                     state: latest
+                    update_cache: yes
                    
-          - name: run httpd
-            systemd:
-                    name: httpd
-                    state: started
-                    enabled: yes
-
-          - name: Allow HTTP traffic
-            firewalld:
-
-                    service: http
-                    permanent: yes
-                    state: enabled
-                    immediate: yes
-
-          - name: Reload firewalld
-            command: firewall-cmd --reload
-
