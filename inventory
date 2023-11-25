@@ -1,4 +1,10 @@
+[web_server]
 192.168.1.46 httpd_package=httpd php_package=php
-192.168.1.47 httpd_package=httpd php_package=php
+#192.168.1.47 httpd_package=httpd php_package=php
+#192.168.1.51 httpd_packahge=apache2 php_package=libapache2-mod-php
+[db_server]
 192.168.1.49 httpd_package=httpd php_package=php
+
+[file_server]
 192.168.1.50 httpd_package=httpd php_package=php
+

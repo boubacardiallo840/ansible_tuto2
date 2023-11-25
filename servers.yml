@@ -5,6 +5,7 @@
   pre_tasks:
 
           - name: install updates (Redhat)
+            tags: always
             dnf:
                     update_only: yes
                     
@@ -13,6 +14,7 @@
   tasks: 
         
           - name: install httpd and php for Redhat server
+            tags: apache,centos,httpd
             yum:
                     name:
                             - httpd
@@ -23,6 +25,7 @@
   become: true
   tasks:
           - name: install mariadb package (Redhat)
+            tags: centos,bd,mariadb
             yum:
                     name: mariadb
                     state: latest
@@ -30,6 +33,7 @@
   become: true
   tasks:
           - name: install samba package (Redhat)
+            tags: samba
             yum:
                     name: samba
                     state: latest
@@ -38,58 +42,3 @@
                     name: smb
                     state: started
                     enabled: yes
-
-
-- name: Install Nagios on RHEL
-  hosts: nagios_server
-  become: yes
-
-  tasks:
-    - name: Install required packages
-      yum:
-        name: "{{ item }}"
-        state: present
-      with_items:
-        - httpd
-        - php
-        - gcc
-        - glibc
-        - glibc-common
-        - gd
-        - gd-devel
-        - make
-        - net-snmp
-        - openssl-devel
-        - xinetd
-        - unzip
-
-    - name: Download Nagios Core
-      get_url:
-        url: "https://github.com/NagiosEnterprises/nagioscore/archive/nagios-4.4.6.tar.gz"
-        dest: "/tmp/nagioscore.tar.gz"
-
-    - name: Extract Nagios Core
-      ansible.builtin.unarchive:
-        src: "/tmp/nagioscore.tar.gz"
-        dest: "/tmp/nagioscore"
-        remote_src: yes
-
-    - name: Compile and install Nagios Core
-      command: chdir=/tmp/nagioscore/nagioscore-nagios-4.4.6 ./configure --with-httpd-conf=/etc/httpd/conf.d
-    - command: chdir=/tmp/nagioscore/nagioscore-nagios-4.4.6 make all
-    - command: chdir=/tmp/nagioscore/nagioscore-nagios-4.4.6 make install
-
-    - name: Install Nagios Plugins
-      command: chdir=/tmp/nagioscore/nagioscore-nagios-4.4.6/plugins make
-    - command: chdir=/tmp/nagioscore/nagioscore-nagios-4.4.6/plugins make install
-
-    - name: Create Nagios User and Group
-      user:
-        name: nagios
-        groups: http
-
-    - name: Enable and start httpd service
-      service:
-        name: httpd
-        enabled: yes
-        state: started
