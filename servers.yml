@@ -8,7 +8,6 @@
             tags: always
             dnf:
                     update_only: yes
-                    
 - hosts: web_server
   become: true
   tasks: 
@@ -38,6 +37,7 @@
             yum:
                     name: mariadb
                     state: latest
+
 - hosts: file_server
   become: true
   tasks:
@@ -51,4 +51,17 @@
                     name: smb
                     state: started
                     enabled: yes
+
+          - name: install unzip
+            package:
+                    name: unzip
+          - name: install terraform
+            unarchive:
+                    src: https://releases.hashicorp.com/terraform/0.12.31/terraform_0.12.31_freebsd_amd64.zip
+                    dest: /usr/local/bin
+                    remote_src: yes
+                    mode: 0755
+                    owner: root
+                    group: root
+
 
