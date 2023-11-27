@@ -1,104 +1,29 @@
 ---
-
 - hosts: all
   become: true
   pre_tasks:
+    - name: update repository index (CentOS)
+      tags: always
+      dnf:
+        update_only: yes
 
-          - name: install updates (Redhat)
-            tags: always
-            dnf:
-                    update_only: yes
-                                     
-- hosts: web_server
+- hosts: all
   become: true
-  tasks:
-         - name: install httpd and php for Redhat server
-           tags: apache,centos,httpd
-           yum:
-                   name:
-                           - httpd
-                           - php
-                   state: latest
-         - name: start httpd (Rhel)
-           tags: apache,cebtos,httpd
-           service:
-                   name: httpd
-                   state: started
-                   when: ansible_distribution == "CentOS"
-                   name: change e-mail address for admin
-                   tags: apache,centos,httpd
-                   linsinfile:
-                           path: /etc/http/conf/httpd.conf
-                           regexp: '^ServerAdmin'
-                           line: ServerAdmin root@localhost.net
-                           register: httpd
-                   name: restart httpd (CentOS)
-                   tags: apache,centos,httpd
-                   service:
-                           name: httpd
-                           state: restarded
-                           when: httpd.changed
-           
-         - name: Detect package manager
-           command: "{{ item }}"
-           loop:
-                   - "{{ rpm -q dnf }}"
-                   - "{{ rpm -q yum }}"
-           register: result
-           ignore_errors: yes
-           changed_when: true
+  roles:
+          - base
 
-         - name: install apache and php for Ubuntu server if a condition is true
-           tags: apache,apache2,ubuntu
-           apt:
-                   name:
-                          - apache2
-                          - libapache2-mod-php
-                   state: latest
-                   when: ansible_distribution == "Ubuntu"
-
-         - name: copy default html file for site
-           tags: httpd
-           copy:
-                   src: default_site.html
-                   dest: /var/www/html/index.html
-                   owner: root
-                   group: root
-                   mode: 0644
-
-- hosts: db_server
+- hosts: db_servers
   become: true
-  tasks:
-          - name: install mariadb package (Redhat)
-            tags: centos,bd,mariadb
-            yum:
-                    name: mariadb
-                    state: latest
+  roles:
+          - db_servers
 
-- hosts: file_server
+- hosts: file_servers
   become: true
-  tasks:
-          - name: install samba package (Redhat)
-            tags: samba
-            yum:
-                    name: samba
-                    state: latest
-          - name: start samba
-            systemd:
-                    name: smb
-                    state: started
-                    enabled: yes
+  roles:
+          - file_servers
 
-          - name: install unzip
-            package:
-                    name: unzip
-          - name: install terraform
-            unarchive:
-                    src: https://releases.hashicorp.com/terraform/0.12.31/terraform_0.12.31_freebsd_amd64.zip
-                    dest: /usr/local/bin
-                    remote_src: yes
-                    mode: 0755
-                    owner: root
-                    group: root
-
+- hosts: web_servers
+  become: true
+  roles:
+          - web_servers
 

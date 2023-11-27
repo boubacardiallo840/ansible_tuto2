@@ -1,0 +1,15 @@
+- name: install httpd and php for Redhat server
+  tags: apache,centos,httpd
+  yum:
+          name:
+                  - httpd
+                  - php
+          state: latest
+         
+- name: start httpd (Rhel)
+  tags: apache,centos,httpd
+  service:
+          name: httpd
+          state: started
+          
+

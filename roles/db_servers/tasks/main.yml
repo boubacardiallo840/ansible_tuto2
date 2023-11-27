@@ -1,0 +1,6 @@
+- name: install mariadb package (Redhat)
+  tags: centos,db,mariadb
+  yum:
+          name: mariadb
+
+

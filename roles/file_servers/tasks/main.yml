@@ -1,0 +1,11 @@
+- name: install samba package (Redhat)
+  tags: samba
+  yum:
+          name: samba
+          state: latest
+- name: start samba
+  systemd:
+          name: smb
+          state: started
+          enabled: yes
+
