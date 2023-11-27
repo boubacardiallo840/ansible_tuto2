@@ -1,15 +1,14 @@
 - name: install httpd and php for Redhat server
-  tags: apache,centos,httpd
-  yum:
+  tags: apache,centos,httpd,php
+  package:
           name:
-                  - httpd
-                  - php
+                  - "{{ apache_package_name }}"
+                  - "{{ php_package_name }}"
           state: latest
          
-- name: start httpd (Rhel)
-  tags: apache,centos,httpd
+- name: start and enable httpd (Rhel)
+  tags: apache,httpd
   service:
-          name: httpd
+          name: "{{ apache_service }}"
           state: started
-          
-
+          enabled: yes
