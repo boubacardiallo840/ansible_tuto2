@@ -3,10 +3,10 @@
 - hosts: all
   become: true
   tasks:
-          - name: install httpd and php
+          - name: install apache and php
             package:
                     name: 
-                        - "{{ httpd_package }}"
+                        - "{{ apache_package }}"
                         - "{{ php_package }}"
                     state: latest
                     update_cache: yes
